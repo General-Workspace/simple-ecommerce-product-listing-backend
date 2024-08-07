@@ -35,6 +35,12 @@ export class User extends Model {
   })
   email!: string;
 
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  password!: string;
+
   @HasMany(() => Product)
   products!: Product[];
 }
