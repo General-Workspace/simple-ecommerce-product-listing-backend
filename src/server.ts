@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { App } from "./app";
 import { sequelize } from "./config/sequelize.config";
 import "reflect-metadata";
-// import { logger } from "./utils/logger";
+import logger from "./utils/logger";
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ class Server {
       .sync()
       .then(() => {
         this.server.listen(this.port, () => {
-          console.log(`Server running on port ${this.port}`);
+          logger.info(`Server is running on port ${this.port}`);
         });
       })
       .catch((error) => {
