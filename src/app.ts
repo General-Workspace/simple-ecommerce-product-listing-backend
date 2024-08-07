@@ -1,5 +1,5 @@
 import express, { Application, Request, Response, NextFunction } from "express";
-// import { routes } from "./routes";
+import routes from "./routes";
 // import { errorHandler } from './middleware/error-handler';
 import cors from "cors";
 import morgan from "morgan";
@@ -20,12 +20,11 @@ export class App {
     this.app.use(morgan("dev"));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-    // this.app.use(router);
     // this.app.use(errorHandler);
   }
 
   private mountRoutes() {
-    //this.app.use("/", routes);
+    this.app.use("/", routes);
 
     this.app.get("/", (_req: Request, res: Response) => {
       res.status(StatusCodes.OK).json({
