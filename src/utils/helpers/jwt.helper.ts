@@ -1,4 +1,6 @@
 import jwt, { Secret, TokenExpiredError } from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 class JWTService {
   private secret: Secret = process.env["JWT_SECRET"] as Secret;

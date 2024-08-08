@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
-import { response } from "../../utils/lib/response.lib";
-import { ErrorResponseData } from "../../@types";
-import { User } from "../../models/users.model";
+import { responseHandler } from "../../utils/lib/response.lib";
+import { ErrorResponseData, IUser } from "../../@types";
+import User from "../../models/user.model";
 import { jwtService } from "../../utils/helpers/jwt.helper";
 
 interface AuthenticatedUserError {
@@ -12,8 +12,9 @@ interface AuthenticatedUserError {
 }
 
 interface AuthenticatedUserRequest extends Request {
-  user?: User;
+  user?: IUser;
 }
+//user?: Record<string, unknown>;
 
 type AuthenticatedUserResponse = Response<ErrorResponseData>;
 
@@ -33,7 +34,11 @@ class AuthService {
           type: "Authentication Error",
           message: "Token is missing",
         };
-        return response.errorResponse(this.res, err.status_code, err.message);
+        return responseHandler.errorResponse(
+          this.res,
+          err.status_code,
+          err.message
+        );
       }
 
       const token = authHeader.split(" ")[1];
@@ -43,7 +48,11 @@ class AuthService {
           type: "Authentication Error",
           message: "Token is missing",
         };
-        return response.errorResponse(this.res, err.status_code, err.message);
+        return responseHandler.errorResponse(
+          this.res,
+          err.status_code,
+          err.message
+        );
       }
 
       const payload = jwtService.verifyToken(token);
@@ -53,22 +62,28 @@ class AuthService {
           type: "Authentication Error",
           message: "Token is invalid",
         };
-        return response.errorResponse(this.res, err.status_code, err.message);
+        return responseHandler.errorResponse(
+          this.res,
+          err.status_code,
+          err.message
+        );
       }
 
-      const user = await User.findOne({
-        where: { email: payload["email"] as string },
-      });
+      const user = await User.findOne({ email: payload["email"] });
       if (!user) {
         const err: AuthenticatedUserError = {
           status_code: StatusCodes.NOT_FOUND,
           type: "Authentication Error",
           message: "User not found",
         };
-        return response.errorResponse(this.res, err.status_code, err.message);
+        return responseHandler.errorResponse(
+          this.res,
+          err.status_code,
+          err.message
+        );
       }
 
-      this.req.user = user;
+      this.req.user = user as IUser;
       return this.next();
     } catch (error: any) {
       const err: AuthenticatedUserError = {
@@ -76,7 +91,11 @@ class AuthService {
         message: error.message,
         status_code: StatusCodes.UNAUTHORIZED,
       };
-      return response.errorResponse(this.res, err.status_code, err.message);
+      return responseHandler.errorResponse(
+        this.res,
+        err.status_code,
+        err.message
+      );
     }
   }
 }

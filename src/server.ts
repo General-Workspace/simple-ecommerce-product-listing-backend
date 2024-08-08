@@ -1,8 +1,7 @@
 import http from "node:http";
 import dotenv from "dotenv";
 import { App } from "./app";
-import { sequelize } from "./config/sequelize.config";
-import "reflect-metadata";
+import connectDB from "./config/database.config";
 import logger from "./utils/logger";
 
 dotenv.config();
@@ -22,17 +21,10 @@ class Server {
   }
 
   private startServer(): void {
-    sequelize
-      .sync()
-      .then(() => {
-        this.server.listen(this.port, () => {
-          logger.info(`Server is running on port ${this.port}`);
-        });
-      })
-      .catch((error) => {
-        console.error("Error connecting to the database: ", error);
-        process.exit(1);
-      });
+    this.server.listen(this.port, async () => {
+      await connectDB();
+      logger.info(`Server is running on port ${this.port}`);
+    });
   }
 
   private handleShutdown(): void {

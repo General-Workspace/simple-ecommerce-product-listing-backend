@@ -32,4 +32,4 @@ class ResponseHandler {
   }
 }
 
-export const response = new ResponseHandler();
+export const responseHandler = new ResponseHandler();
