@@ -1,7 +1,7 @@
 import Product from "../models/product.model";
 import { IProductService, IProduct /*, ResponseData*/ } from "../@types";
 import mongoose from "mongoose";
-import  { cloudinary} from "../config/multer.config"
+import { cloudinary } from "../config/multer.config";
 // import { responseHandler } from "../utils/lib/response.lib";
 // import { StatusCodes } from "http-status-codes";
 
@@ -11,7 +11,7 @@ export class ProductService implements IProductService {
     userId: string,
     file: Express.Multer.File
   ): Promise<unknown> => {
-    const { name, price, description, imageURL } = payload;
+    const { name, price, description } = payload;
 
     const createdBy = userId;
 
@@ -27,7 +27,7 @@ export class ProductService implements IProductService {
       name,
       price,
       description,
-      imageURL,
+      imageURL: payload.imageURL,
       createdBy,
     });
 
