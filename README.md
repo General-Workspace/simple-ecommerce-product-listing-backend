@@ -11,6 +11,8 @@ This is a simple Ecommerce API that allows you to create, read, update and delet
 - JWT
 - Bcrypt
 - Typescript
+- Cloudinary
+- Multer
 
 ## Installation
 
