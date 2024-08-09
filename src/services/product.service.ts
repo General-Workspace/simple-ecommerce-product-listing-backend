@@ -74,11 +74,11 @@ export class ProductService implements IProductService {
 
     if (file) {
       // delete old cloudinary image
-      const oldImageUrl = product.imageURL;
-      if (oldImageUrl) {
-        const publicId = oldImageUrl.split("/").pop()?.split(".")[0];
-        await cloudinary.uploader.destroy(publicId);
-      }
+      // const oldImageUrl = product.imageURL;
+      // if (oldImageUrl) {
+      //   const publicId = oldImageUrl.split("/").pop()?.split(".")[0];
+      //   await cloudinary.uploader.destroy(publicId);
+      // }
 
       const { secure_url } = await cloudinary.uploader.upload(file.path);
       payload.imageURL = secure_url;
