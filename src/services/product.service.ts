@@ -61,7 +61,7 @@ export class ProductService implements IProductService {
     payload: IProduct,
     file: Express.Multer.File
   ): Promise<unknown> => {
-    const { name, price, description, imageURL } = payload;
+    const { name, price, description } = payload;
 
     const product = await Product.findOne({ _id: id, createdBy: userId });
     if (!product) {
@@ -82,7 +82,6 @@ export class ProductService implements IProductService {
 
       const { secure_url } = await cloudinary.uploader.upload(file.path);
       payload.imageURL = secure_url;
-
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
@@ -111,10 +110,10 @@ export class ProductService implements IProductService {
     }
 
     const imageUrl = product.imageURL;
-      if (imageUrl) {
-        const publicId = imageUrl.split("/").pop()?.split(".")[0];
-        await cloudinary.uploader.destroy(publicId);
-      }
+    if (imageUrl) {
+      const publicId = imageUrl.split("/").pop()?.split(".")[0];
+      await cloudinary.uploader.destroy(publicId);
+    }
 
     await product.deleteOne();
     return { message: "Product deleted successfully" };
