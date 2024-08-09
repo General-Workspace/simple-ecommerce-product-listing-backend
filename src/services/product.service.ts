@@ -58,7 +58,8 @@ export class ProductService implements IProductService {
   public updateProduct = async (
     id: string,
     userId: string,
-    payload: IProduct
+    payload: IProduct,
+    file: Express.Multer.File
   ): Promise<unknown> => {
     const { name, price, description, imageURL } = payload;
 
@@ -67,14 +68,31 @@ export class ProductService implements IProductService {
       throw new Error("Product not found");
     }
 
+    if (price) {
+      payload.price = Number(price);
+    }
+
+    if (file) {
+      // delete old cloudinary image
+      const oldImageUrl = product.imageURL;
+      if (oldImageUrl) {
+        const publicId = oldImageUrl.split("/").pop()?.split(".")[0];
+        await cloudinary.uploader.destroy(publicId);
+      }
+
+      const { secure_url } = await cloudinary.uploader.upload(file.path);
+      payload.imageURL = secure_url;
+
+    }
+
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
       {
         $set: {
           name,
-          price,
+          price: payload.price,
           description,
-          imageURL,
+          imageURL: payload.imageURL,
         },
       },
       { new: true }
@@ -91,6 +109,12 @@ export class ProductService implements IProductService {
     if (!product) {
       throw new Error("Product not found");
     }
+
+    const imageUrl = product.imageURL;
+      if (imageUrl) {
+        const publicId = imageUrl.split("/").pop()?.split(".")[0];
+        await cloudinary.uploader.destroy(publicId);
+      }
 
     await product.deleteOne();
     return { message: "Product deleted successfully" };

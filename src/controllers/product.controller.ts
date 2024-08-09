@@ -63,7 +63,8 @@ export class ProductController {
       const product = await this.productService.updateProduct(
         req.params["id"] as string,
         (req as UserObject).user._id as string,
-        req.body
+        req.body,
+        req.file as Express.Multer.File
       );
       return responseHandler.successResponse(
         res,

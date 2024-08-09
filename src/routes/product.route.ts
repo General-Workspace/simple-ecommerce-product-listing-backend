@@ -28,7 +28,7 @@ class ProductRoute {
     );
     this.router.get("/search", authService, this.authController.searchProducts);
     this.router.get("/:id", authService, this.authController.fetchProductById);
-    this.router.put("/:id", authService, this.authController.updateProduct);
+    this.router.put("/:id", authService, upload, this.authController.updateProduct);
     this.router.delete("/:id", authService, this.authController.deleteProduct);
   }
 }

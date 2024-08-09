@@ -55,7 +55,8 @@ declare interface IProductService {
   updateProduct(
     id: string,
     userId: string,
-    payload: IProduct
+    payload: IProduct,
+    file: Express.Multer.File
   ): Promise<unknown>;
   deleteProduct(id: string, userId): Promise<unknown>;
   searchProducts(query: string): Promise<unknown>;
