@@ -109,11 +109,11 @@ export class ProductService implements IProductService {
       throw new Error("Product not found");
     }
 
-    const imageUrl = product.imageURL;
-    if (imageUrl) {
-      const publicId = imageUrl.split("/").pop()?.split(".")[0];
-      await cloudinary.uploader.destroy(publicId);
-    }
+    // const imageUrl = product.imageURL;
+    // if (imageUrl) {
+    //   const publicId = imageUrl.split("/").pop()?.split(".")[0];
+    //   await cloudinary.uploader.destroy(publicId);
+    // }
 
     await product.deleteOne();
     return { message: "Product deleted successfully" };
