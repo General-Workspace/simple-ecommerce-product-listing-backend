@@ -2,8 +2,7 @@ import Product from "../models/product.model";
 import { IProductService, IProduct /*, ResponseData*/ } from "../@types";
 import mongoose from "mongoose";
 import { cloudinary } from "../config/multer.config";
-// import { responseHandler } from "../utils/lib/response.lib";
-// import { StatusCodes } from "http-status-codes";
+import { NotFound, BadRequest } from "../middlewwares/error/error.middleware";
 
 export class ProductService implements IProductService {
   public createProduct = async (
@@ -38,18 +37,23 @@ export class ProductService implements IProductService {
 
   public fetchProducts = async (): Promise<unknown> => {
     const products = await Product.find();
+
+    if (products.length < 1) {
+      throw new NotFound("No products found");
+    }
+
     return products;
   };
 
   public fetchProductById = async (id: string): Promise<unknown> => {
     // check if id is valid
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new Error("Invalid product id");
+      throw new BadRequest("Invalid product id");
     }
 
     const product = await Product.findById(id);
     if (!product) {
-      throw new Error("Product not found");
+      throw new NotFound("Product not found");
     }
 
     return product;
@@ -65,7 +69,7 @@ export class ProductService implements IProductService {
 
     const product = await Product.findOne({ _id: id, createdBy: userId });
     if (!product) {
-      throw new Error("Product not found");
+      throw new NotFound("Product not found");
     }
 
     if (price) {
@@ -73,12 +77,11 @@ export class ProductService implements IProductService {
     }
 
     if (file) {
-      // delete old cloudinary image
-      // const oldImageUrl = product.imageURL;
-      // if (oldImageUrl) {
-      //   const publicId = oldImageUrl.split("/").pop()?.split(".")[0];
-      //   await cloudinary.uploader.destroy(publicId);
-      // }
+      const oldImageUrl = product.imageURL;
+      if (oldImageUrl) {
+        const publicId = oldImageUrl.split("/").pop()?.split(".")[0];
+        await cloudinary.uploader.destroy(publicId as string);
+      }
 
       const { secure_url } = await cloudinary.uploader.upload(file.path);
       payload.imageURL = secure_url;
@@ -106,14 +109,14 @@ export class ProductService implements IProductService {
   ): Promise<unknown> => {
     const product = await Product.findOne({ _id: id, createdBy: userId });
     if (!product) {
-      throw new Error("Product not found");
+      throw new NotFound("Product not found");
     }
 
-    // const imageUrl = product.imageURL;
-    // if (imageUrl) {
-    //   const publicId = imageUrl.split("/").pop()?.split(".")[0];
-    //   await cloudinary.uploader.destroy(publicId);
-    // }
+    const imageUrl = product.imageURL;
+    if (imageUrl) {
+      const publicId = imageUrl.split("/").pop()?.split(".")[0];
+      await cloudinary.uploader.destroy(publicId as string);
+    }
 
     await product.deleteOne();
     return { message: "Product deleted successfully" };
@@ -123,7 +126,7 @@ export class ProductService implements IProductService {
     const queryObject = {} as Record<string, unknown>;
 
     if (!query) {
-      throw new Error("Search query is required");
+      throw new BadRequest("Query parameter is required");
     }
 
     if (query) {

@@ -1,34 +1,26 @@
 import User from "../models/user.model";
-import { IAuthService, IUserLogin, IUser, ResponseData } from "../@types";
+import { IAuthService, IUserLogin, IUser } from "../@types";
 import BcryptHelper from "../utils/helpers/bcrypt.helper";
-import { responseHandler } from "../utils/lib/response.lib";
-import { StatusCodes } from "http-status-codes";
 import { jwtService } from "../utils/helpers/jwt.helper";
 import { UserHelper } from "../utils/helpers/user.helper";
+import {
+  NotFound,
+  Conflict,
+  Unauthorized,
+} from "../middlewwares/error/error.middleware";
 
 export class AuthService implements IAuthService {
-  public signUp = async (
-    payload: IUser,
-    res: ResponseData<IUser>
-  ): Promise<unknown> => {
+  public signUp = async (payload: IUser): Promise<unknown> => {
     const { email, password, username } = payload;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return responseHandler.errorResponse(
-        res,
-        StatusCodes.CONFLICT,
-        "User already exists"
-      );
+      throw new Conflict("User already exists");
     }
 
     const usernameExists = await User.findOne({ username });
     if (usernameExists) {
-      return responseHandler.errorResponse(
-        res,
-        StatusCodes.CONFLICT,
-        "Username has been taken"
-      );
+      throw new Conflict("Username already exists");
     }
 
     const hashedPassword = await BcryptHelper.hashPassword(password);
@@ -45,20 +37,12 @@ export class AuthService implements IAuthService {
     return userResponse;
   };
 
-  public login = async (
-    payload: IUserLogin
-    //res: ResponseData<IUser>
-  ): Promise<unknown> => {
+  public login = async (payload: IUserLogin): Promise<unknown> => {
     const { email, password } = payload;
 
     const user = await User.findOne({ email });
     if (!user) {
-      throw new Error("User not found");
-      // return responseHandler.errorResponse(
-      //   res,
-      //   StatusCodes.NOT_FOUND,
-      //   "User not found"
-      // );
+      throw new NotFound("User not found");
     }
 
     const isPasswordValid = await BcryptHelper.comparePassword(
@@ -66,12 +50,7 @@ export class AuthService implements IAuthService {
       user.password
     );
     if (!isPasswordValid) {
-      // return responseHandler.errorResponse(
-      //   res,
-      //   StatusCodes.UNAUTHORIZED,
-      //   "Invalid credentials"
-      // );
-      throw new Error("Invalid Credentials");
+      throw new Unauthorized("Invalid email or password");
     }
 
     const token = jwtService.generateToken({ email });

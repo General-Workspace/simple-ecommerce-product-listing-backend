@@ -4,15 +4,15 @@ import { Document } from "mongoose";
 declare type ResponseData<T> = Response<T>;
 
 declare interface SuccessResponseData<T> {
+  status: boolean;
   status_code: number;
-  status: string;
   message: string;
   data: T;
 }
 
 declare interface ErrorResponseData {
+  status: boolean;
   status_code: number;
-  status: string;
   message: string;
 }
 

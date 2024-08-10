@@ -2,6 +2,12 @@ import { Router } from "express";
 import { ProductController } from "../controllers/product.controller";
 import { authService } from "../middlewwares/authorization/user.authorization";
 import { multerConfig } from "../config/multer.config";
+import {
+  productValidation,
+  productIdValidation,
+  updateProductValidation,
+  deleteProductValidation,
+} from "../middlewwares/validation/product.validation";
 
 const upload = multerConfig.single("imageURL");
 
@@ -17,6 +23,7 @@ class ProductRoute {
   private routes(): void {
     this.router.post(
       "/add-product",
+      productValidation,
       authService,
       upload,
       this.authController.createProduct
@@ -27,9 +34,25 @@ class ProductRoute {
       this.authController.fetchProducts
     );
     this.router.get("/search", authService, this.authController.searchProducts);
-    this.router.get("/:id", authService, this.authController.fetchProductById);
-    this.router.put("/:id", authService, upload, this.authController.updateProduct);
-    this.router.delete("/:id", authService, this.authController.deleteProduct);
+    this.router.get(
+      "/:id",
+      authService,
+      productIdValidation,
+      this.authController.fetchProductById
+    );
+    this.router.put(
+      "/:id",
+      authService,
+      updateProductValidation,
+      upload,
+      this.authController.updateProduct
+    );
+    this.router.delete(
+      "/:id",
+      authService,
+      deleteProductValidation,
+      this.authController.deleteProduct
+    );
   }
 }
 

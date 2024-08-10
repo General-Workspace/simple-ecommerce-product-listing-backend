@@ -10,8 +10,8 @@ class ResponseHandler {
     data: T
   ) {
     const response: SuccessResponseData<T> = {
+      status: true,
       status_code,
-      status: "success",
       message,
       data,
     };
@@ -24,8 +24,8 @@ class ResponseHandler {
     message: string
   ) {
     const response: ErrorResponseData = {
+      status: false,
       status_code,
-      status: "error",
       message,
     };
     return res.status(status_code).json(response);

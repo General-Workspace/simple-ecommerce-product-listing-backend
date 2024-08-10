@@ -1,6 +1,6 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import routes from "./routes";
-// import { errorHandler } from './middleware/error-handler';
+import { errorMiddleware } from "./middlewwares/error/error.middleware";
 import cors from "cors";
 import morgan from "morgan";
 import { StatusCodes } from "http-status-codes";
@@ -12,6 +12,7 @@ export class App {
     this.app = express();
     this.configure();
     this.mountRoutes();
+    this.errorHandling();
     this.initializeErrorHandling();
   }
 
@@ -20,7 +21,6 @@ export class App {
     this.app.use(morgan("dev"));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-    // this.app.use(errorHandler);
   }
 
   private mountRoutes() {
@@ -39,13 +39,16 @@ export class App {
     });
   }
 
+  private errorHandling() {
+    this.app.use(errorMiddleware);
+  }
+
   private initializeErrorHandling() {
     this.app.use(
       (
         error: Error,
         _req: Request,
         res: Response,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _next: NextFunction
       ): void => {
         const err: {

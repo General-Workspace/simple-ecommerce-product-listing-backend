@@ -4,17 +4,17 @@ import { responseHandler } from "../../utils/lib/response.lib";
 import { ErrorResponseData, IUser } from "../../@types";
 import User from "../../models/user.model";
 import { jwtService } from "../../utils/helpers/jwt.helper";
+// import { Forbidden, NotFound, Unauthorized, BadRequest } from "../error/error.middleware";
 
 interface AuthenticatedUserError {
   status_code: number;
-  type: string;
+  type: boolean;
   message: string;
 }
 
 interface AuthenticatedUserRequest extends Request {
   user?: IUser;
 }
-//user?: Record<string, unknown>;
 
 type AuthenticatedUserResponse = Response<ErrorResponseData>;
 
@@ -31,7 +31,7 @@ class AuthService {
       if (!authHeader || !authHeader.startsWith("Bearer")) {
         const err: AuthenticatedUserError = {
           status_code: StatusCodes.UNAUTHORIZED,
-          type: "Authentication Error",
+          type: false,
           message: "Token is missing",
         };
         return responseHandler.errorResponse(
@@ -45,7 +45,7 @@ class AuthService {
       if (!token) {
         const err: AuthenticatedUserError = {
           status_code: StatusCodes.UNAUTHORIZED,
-          type: "Authentication Error",
+          type: false,
           message: "Token is missing",
         };
         return responseHandler.errorResponse(
@@ -59,7 +59,7 @@ class AuthService {
       if (!payload) {
         const err: AuthenticatedUserError = {
           status_code: StatusCodes.UNAUTHORIZED,
-          type: "Authentication Error",
+          type: false,
           message: "Token is invalid",
         };
         return responseHandler.errorResponse(
@@ -73,7 +73,7 @@ class AuthService {
       if (!user) {
         const err: AuthenticatedUserError = {
           status_code: StatusCodes.NOT_FOUND,
-          type: "Authentication Error",
+          type: false,
           message: "User not found",
         };
         return responseHandler.errorResponse(
@@ -87,7 +87,7 @@ class AuthService {
       return this.next();
     } catch (error: any) {
       const err: AuthenticatedUserError = {
-        type: "Authentication Error",
+        type: false,
         message: error.message,
         status_code: StatusCodes.UNAUTHORIZED,
       };
