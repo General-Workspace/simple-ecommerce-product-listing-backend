@@ -24,8 +24,6 @@ type ValidateProductResponse = Response<unknown, Record<string, unknown>>;
 
 export const productValidation = [
   body("name")
-    .exists()
-    .withMessage("Name is required")
     .notEmpty()
     .withMessage("Name cannot be empty")
     .isString()
@@ -33,8 +31,6 @@ export const productValidation = [
     .trim()
     .escape(),
   body("price")
-    .exists()
-    .withMessage("Price is required")
     .notEmpty()
     .withMessage("Price cannot be empty")
     .isNumeric()
@@ -42,8 +38,6 @@ export const productValidation = [
     .trim()
     .escape(),
   body("description")
-    .exists()
-    .withMessage("Description is required")
     .notEmpty()
     .withMessage("Description cannot be empty")
     .isString()
@@ -51,8 +45,6 @@ export const productValidation = [
     .trim()
     .escape(),
   body("imageURL")
-    .exists()
-    .withMessage("Image is required")
     .notEmpty()
     .withMessage("Image cannot be empty"),
 
