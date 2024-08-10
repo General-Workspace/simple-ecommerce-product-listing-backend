@@ -11,7 +11,7 @@ export class AuthController {
 
   public signUpUser = tryCatch(
     async (req: Request, res: ResponseData<IUser>) => {
-      const user = await this.authService.signUp(req.body, res);
+      const user = await this.authService.signUp(req.body);
       return responseHandler.successResponse(
         res,
         StatusCodes.CREATED,
