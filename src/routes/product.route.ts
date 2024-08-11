@@ -23,8 +23,8 @@ class ProductRoute {
   private routes(): void {
     this.router.post(
       "/add-product",
-      productValidation,
       authService,
+      productValidation,
       upload,
       this.authController.createProduct
     );
