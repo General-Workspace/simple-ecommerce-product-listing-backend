@@ -8,7 +8,6 @@ interface CustomError extends Error {
 }
 
 const errorFormatter = ({ msg, param }: any): CustomError => {
-  //return `${location}[${param}]: ${msg}`;
   return { field: param, message: msg } as CustomError;
 };
 

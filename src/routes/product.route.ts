@@ -24,8 +24,8 @@ class ProductRoute {
     this.router.post(
       "/add-product",
       authService,
-      productValidation,
       upload,
+      productValidation,
       this.authController.createProduct
     );
     this.router.get(
@@ -43,8 +43,8 @@ class ProductRoute {
     this.router.put(
       "/:id",
       authService,
-      updateProductValidation,
       upload,
+      updateProductValidation,
       this.authController.updateProduct
     );
     this.router.delete(
